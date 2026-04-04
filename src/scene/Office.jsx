@@ -1,0 +1,70 @@
+import { Canvas } from '@react-three/fiber'
+import { OrbitControls } from '@react-three/drei'
+import { Floor }      from './Floor.jsx'
+import { Zone }       from './Zone.jsx'
+import { CommonArea } from './CommonArea.jsx'
+import { Avatar }     from './Avatar.jsx'
+
+export function Office({ agents, runtimes, approvals, onAvatarClick, selectedId }) {
+  const nexusAgents    = agents.filter(a => a.zone === 'picoclaw' || a.zone === 'nexus' ? a.zone === 'nexus' : false)
+  const picoAgents     = agents.filter(a => a.zone === 'picoclaw')
+  const openclawAgents = agents.filter(a => a.zone === 'openclaw')
+
+  const nexusRunning    = runtimes?.nexus?.running    ?? false
+  const picoRunning     = runtimes?.picoclaw?.running ?? false
+  const openclawRunning = runtimes?.openclaw?.running ?? false
+
+  return (
+    <Canvas
+      camera={{ position: [0, 20, 18], fov: 45, near: 0.1, far: 200 }}
+      shadows
+      gl={{ antialias: true, alpha: false }}
+      style={{ background: '#060810' }}
+    >
+      {/* Ambient */}
+      <ambientLight intensity={0.4} />
+
+      {/* Key light */}
+      <directionalLight
+        position={[10, 20, 10]}
+        intensity={0.8}
+        castShadow
+        shadow-mapSize={[1024, 1024]}
+      />
+
+      {/* Zone fill lights */}
+      <pointLight position={[-6, 4,  4]} intensity={0.6} color="#4f8ef7" distance={14} />
+      <pointLight position={[-6, 4, -5]} intensity={0.5} color="#f59e0b" distance={12} />
+      <pointLight position={[ 6, 4, -3]} intensity={0.5} color="#a78bfa" distance={14} />
+      <pointLight position={[ 0, 3,  2]} intensity={0.3} color="#ffffff" distance={10} />
+
+      {/* Scene */}
+      <Floor />
+      <CommonArea approvalCount={approvals.length} />
+
+      <Zone name="nexus"    running={nexusRunning}    agentCount={nexusAgents.length} />
+      <Zone name="picoclaw" running={picoRunning}     agentCount={picoAgents.length} />
+      <Zone name="openclaw" running={openclawRunning} agentCount={openclawAgents.length} />
+
+      {/* All avatars */}
+      {agents.map(agent => (
+        <Avatar
+          key={agent.session_id ?? agent.workspace_id}
+          agent={agent}
+          onClick={onAvatarClick}
+          selected={selectedId === (agent.session_id ?? agent.workspace_id)}
+        />
+      ))}
+
+      {/* Camera controls */}
+      <OrbitControls
+        enableDamping
+        dampingFactor={0.06}
+        minDistance={8}
+        maxDistance={45}
+        maxPolarAngle={Math.PI / 2.1}
+        target={[0, 0, 0]}
+      />
+    </Canvas>
+  )
+}
