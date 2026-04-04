@@ -22,21 +22,21 @@ export function Office({ agents, runtimes, approvals, onAvatarClick, selectedId 
       style={{ background: '#060810' }}
     >
       {/* Ambient */}
-      <ambientLight intensity={0.4} />
+      <ambientLight intensity={0.7} />
 
       {/* Key light */}
       <directionalLight
         position={[10, 20, 10]}
-        intensity={0.8}
+        intensity={1.2}
         castShadow
         shadow-mapSize={[1024, 1024]}
       />
 
       {/* Zone fill lights */}
-      <pointLight position={[-6, 4,  4]} intensity={0.6} color="#4f8ef7" distance={14} />
-      <pointLight position={[-6, 4, -5]} intensity={0.5} color="#f59e0b" distance={12} />
-      <pointLight position={[ 6, 4, -3]} intensity={0.5} color="#a78bfa" distance={14} />
-      <pointLight position={[ 0, 3,  2]} intensity={0.3} color="#ffffff" distance={10} />
+      <pointLight position={[-6, 5,  4]} intensity={1.2} color="#4f8ef7" distance={16} />
+      <pointLight position={[-6, 5, -5]} intensity={1.0} color="#f59e0b" distance={14} />
+      <pointLight position={[ 6, 5, -3]} intensity={1.0} color="#a78bfa" distance={16} />
+      <pointLight position={[ 0, 4,  2]} intensity={0.6} color="#ffffff" distance={12} />
 
       {/* Scene */}
       <Floor />

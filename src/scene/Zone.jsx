@@ -14,19 +14,21 @@ function ZonePlatform({ cx, cz, w, d, color, running }) {
         <meshStandardMaterial
           color={color}
           transparent
-          opacity={running ? 0.08 : 0.04}
-          metalness={0.3}
-          roughness={0.6}
+          opacity={running ? 0.18 : 0.10}
+          metalness={0.2}
+          roughness={0.5}
+          emissive={color}
+          emissiveIntensity={running ? 0.08 : 0.02}
         />
       </mesh>
 
       {/* Top edge glow line */}
       <mesh position={[0, h / 2 + 0.005, 0]}>
-        <boxGeometry args={[w, 0.01, d]} />
+        <boxGeometry args={[w, 0.012, d]} />
         <meshBasicMaterial
           color={color}
           transparent
-          opacity={running ? 0.6 : 0.15}
+          opacity={running ? 0.85 : 0.3}
         />
       </mesh>
 

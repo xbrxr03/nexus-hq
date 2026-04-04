@@ -21,6 +21,12 @@ function inferAgentState(agent, approvals) {
   return agent.state ?? 'idle'
 }
 
+const DEMO_RUNTIMES_INIT = {
+  nexus:    { installed: true, running: true,  model: 'qwen2.5:7b' },
+  picoclaw: { installed: true, running: true,  model: 'local' },
+  openclaw: { installed: true, running: true,  model: 'kimi-k2.5' },
+}
+
 export function useClawOS(host, demoMode) {
   const [agents,    setAgents]    = useState([])
   const [runtimes,  setRuntimes]  = useState({})
@@ -28,6 +34,18 @@ export function useClawOS(host, demoMode) {
   const [approvals, setApprovals] = useState([])
   const [events,    setEvents]    = useState([])
   const [connected, setConnected] = useState(false)
+
+  // Immediately sync state when demoMode turns on
+  useEffect(() => {
+    if (demoMode) {
+      setConnected(true)
+      setRuntimes(DEMO_RUNTIMES_INIT)
+    } else if (!host) {
+      setConnected(false)
+      setRuntimes({})
+      setAgents([])
+    }
+  }, [demoMode, host])
 
   const wsRef      = useRef(null)
   const demoRef    = useRef(null)
@@ -84,6 +102,7 @@ export function useClawOS(host, demoMode) {
           fetch(`${base}/api/peers`).then(r => r.json()),
           fetch(`${base}/api/approvals`).then(r => r.json()),
         ])
+        setConnected(true)
 
         const raw = agRes.sessions ?? []
         const enriched = raw.map((a, i) => ({
