@@ -1,14 +1,26 @@
-import { avatarColor } from '../lib/colors.js'
+import { avatarColor } from '../lib/colors'
+import type { Agent, AgentState } from '../types'
 
-const STATE_LABEL = {
-  idle:             { label: 'Idle',             color: 'rgba(255,255,255,0.4)' },
-  working:          { label: 'Working',          color: '#4f8ef7' },
-  completed:        { label: 'Completed',        color: '#34d399' },
-  pending_approval: { label: 'Awaiting Approval', color: '#fb923c' },
-  offline:          { label: 'Offline',          color: 'rgba(255,255,255,0.2)' },
+interface StateLabel {
+  label: string
+  color: string
 }
 
-export function AvatarCard({ agent, onClose, onReset }) {
+const STATE_LABEL: Record<AgentState, StateLabel> = {
+  idle:             { label: 'Idle',              color: 'rgba(255,255,255,0.4)' },
+  working:          { label: 'Working',           color: '#4f8ef7' },
+  completed:        { label: 'Completed',         color: '#34d399' },
+  pending_approval: { label: 'Awaiting Approval',  color: '#fb923c' },
+  offline:          { label: 'Offline',           color: 'rgba(255,255,255,0.2)' },
+}
+
+interface AvatarCardProps {
+  agent: Agent
+  onClose: () => void
+  onReset: (workspace_id: string) => void
+}
+
+export function AvatarCard({ agent, onClose, onReset }: AvatarCardProps) {
   if (!agent) return null
   const color = avatarColor(agent.workspace_id)
   const stateInfo = STATE_LABEL[agent.state] ?? STATE_LABEL.idle

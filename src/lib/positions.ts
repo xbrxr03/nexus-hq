@@ -1,8 +1,10 @@
-// World layout — top-down view
-// Nexus zone: front-left, PicoClaw: back-left, OpenClaw: back-right
-// Common Area: center
+export interface ZoneConfig {
+  center: [number, number, number]
+  size: [number, number]
+  desks: [number, number, number][]
+}
 
-export const ZONES = {
+export const ZONES: Record<string, ZoneConfig> = {
   nexus: {
     center: [-6, 0, 4],
     size:   [9, 8],
@@ -29,17 +31,16 @@ export const ZONES = {
 }
 
 export const COMMON_AREA = {
-  center: [0, 0, 2],
+  center: [0, 0, 2] as [number, number, number],
   radius: 3,
-  // Positions around the ring where agents gather
   meetPositions: [
     [-2, 0,  2], [ 2, 0,  2],
     [ 0, 0,  4], [ 0, 0,  0],
     [-2, 0,  0], [ 2, 0,  0],
-  ],
+  ] as [number, number, number][],
 }
 
-export function getDeskPosition(zone, index) {
+export function getDeskPosition(zone: string, index: number): [number, number, number] {
   const desks = ZONES[zone]?.desks ?? []
   return desks[index % desks.length] ?? ZONES[zone]?.center ?? [0, 0, 0]
 }

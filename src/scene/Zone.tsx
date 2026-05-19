@@ -1,8 +1,17 @@
 import { Text } from '@react-three/drei'
-import { RT } from '../lib/colors.js'
-import { ZONES } from '../lib/positions.js'
+import { RT } from '../lib/colors'
+import { ZONES } from '../lib/positions'
 
-function ZonePlatform({ cx, cz, w, d, color, running }) {
+interface ZonePlatformProps {
+  cx: number
+  cz: number
+  w: number
+  d: number
+  color: string
+  running: boolean
+}
+
+function ZonePlatform({ cx, cz, w, d, color, running }: ZonePlatformProps) {
   const h    = 0.08
   const bump = running ? 0.02 : 0
 
@@ -54,9 +63,15 @@ function ZonePlatform({ cx, cz, w, d, color, running }) {
   )
 }
 
-export function Zone({ name, running = false, agentCount = 0 }) {
-  const rt     = RT[name]
-  const zone   = ZONES[name]
+interface ZoneProps {
+  name: string
+  running?: boolean
+  agentCount?: number
+}
+
+export function Zone({ name, running = false, agentCount = 0 }: ZoneProps) {
+  const rt   = RT[name]
+  const zone = ZONES[name]
   if (!rt || !zone) return null
   const [cx, , cz] = zone.center
   const [w, d]     = zone.size

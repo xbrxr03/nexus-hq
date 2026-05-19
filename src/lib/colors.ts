@@ -1,4 +1,13 @@
-export const RT = {
+export interface ZoneTheme {
+  primary: string
+  dim: string
+  border: string
+  glow: string
+  label: string
+  icon: string
+}
+
+export const RT: Record<string, ZoneTheme> = {
   nexus: {
     primary: '#4f8ef7',
     dim:     'rgba(79,142,247,0.12)',
@@ -25,13 +34,13 @@ export const RT = {
   },
 }
 
-export const AVATAR_PALETTE = [
+export const AVATAR_PALETTE: string[] = [
   '#4f8ef7','#34d399','#f59e0b','#a78bfa',
   '#f87171','#38bdf8','#fb923c','#a3e635',
   '#e879f9','#2dd4bf',
 ]
 
-export function avatarColor(name) {
+export function avatarColor(name: string): string {
   let h = 0
   for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % AVATAR_PALETTE.length
   return AVATAR_PALETTE[h]

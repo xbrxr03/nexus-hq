@@ -1,11 +1,20 @@
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
-import { Floor }      from './Floor.jsx'
-import { Zone }       from './Zone.jsx'
-import { CommonArea } from './CommonArea.jsx'
-import { Avatar }     from './Avatar.jsx'
+import { Floor }      from './Floor'
+import { Zone }       from './Zone'
+import { CommonArea } from './CommonArea'
+import { Avatar }     from './Avatar'
+import type { Agent, RuntimeInfo, Approval } from '../types'
 
-export function Office({ agents, runtimes, approvals, onAvatarClick, selectedId }) {
+interface OfficeProps {
+  agents: Agent[]
+  runtimes: Record<string, RuntimeInfo>
+  approvals: Approval[]
+  onAvatarClick: (agent: Agent) => void
+  selectedId: string | null
+}
+
+export function Office({ agents, runtimes, approvals, onAvatarClick, selectedId }: OfficeProps) {
   const nexusAgents    = agents.filter(a => a.zone === 'picoclaw' || a.zone === 'nexus' ? a.zone === 'nexus' : false)
   const picoAgents     = agents.filter(a => a.zone === 'picoclaw')
   const openclawAgents = agents.filter(a => a.zone === 'openclaw')

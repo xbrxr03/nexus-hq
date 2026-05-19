@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 const S = {
   overlay: {
-    position: 'fixed', inset: 0, zIndex: 100,
+    position: 'fixed' as const, inset: 0, zIndex: 100,
     background: 'rgba(6,8,16,0.92)',
     backdropFilter: 'blur(20px)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -25,14 +25,14 @@ const S = {
   title:    { fontSize: 22, fontWeight: 700, letterSpacing: '-0.4px' },
   subtitle: { fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 3 },
   divider:  { height: 1, background: 'rgba(255,255,255,0.06)', margin: '28px 0' },
-  label:    { fontSize: 12, color: 'rgba(255,255,255,0.5)', marginBottom: 8, letterSpacing: '0.05em', textTransform: 'uppercase' },
+  label:    { fontSize: 12, color: 'rgba(255,255,255,0.5)', marginBottom: 8, letterSpacing: '0.05em', textTransform: 'uppercase' as const },
   input: {
     width: '100%', padding: '12px 14px',
     background: 'rgba(255,255,255,0.05)',
     border: '1px solid rgba(255,255,255,0.1)',
     borderRadius: 10, color: '#f5f5f7',
     fontSize: 14, outline: 'none', fontFamily: 'inherit',
-    boxSizing: 'border-box',
+    boxSizing: 'border-box' as const,
   },
   btnPrimary: {
     width: '100%', padding: '13px', marginTop: 12,
@@ -51,11 +51,16 @@ const S = {
   },
   hint: {
     fontSize: 11, color: 'rgba(255,255,255,0.25)',
-    marginTop: 20, textAlign: 'center', lineHeight: 1.5,
+    marginTop: 20, textAlign: 'center' as const, lineHeight: 1.5,
   },
 }
 
-export function ConnectPanel({ onConnect, onDemo }) {
+interface ConnectPanelProps {
+  onConnect: (host: string) => void
+  onDemo: () => void
+}
+
+export function ConnectPanel({ onConnect, onDemo }: ConnectPanelProps) {
   const [host, setHost] = useState('http://192.168.0.18:7070')
 
   function handleConnect() {

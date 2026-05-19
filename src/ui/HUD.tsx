@@ -1,10 +1,11 @@
-import { RT } from '../lib/colors.js'
+import { RT } from '../lib/colors'
+import type { RuntimeInfo } from '../types'
 
 const S = {
   wrap: {
-    position: 'fixed', top: 16, left: 16, zIndex: 50,
-    display: 'flex', flexDirection: 'column', gap: 8,
-    pointerEvents: 'none',
+    position: 'fixed' as const, top: 16, left: 16, zIndex: 50,
+    display: 'flex', flexDirection: 'column' as const, gap: 8,
+    pointerEvents: 'none' as const,
   },
   topRow: {
     display: 'flex', alignItems: 'center', gap: 10,
@@ -17,7 +18,7 @@ const S = {
     borderRadius: 10, padding: '8px 14px',
   },
   logoText: { fontSize: 14, fontWeight: 700, letterSpacing: '-0.2px' },
-  chip: (running, color) => ({
+  chip: (running: boolean, color: string): React.CSSProperties => ({
     display: 'flex', alignItems: 'center', gap: 6,
     background: running ? `${color}18` : 'rgba(6,8,16,0.7)',
     backdropFilter: 'blur(12px)',
@@ -26,7 +27,7 @@ const S = {
     fontSize: 12, color: running ? color : 'rgba(255,255,255,0.3)',
     transition: 'all 0.3s',
   }),
-  dot: (running, color) => ({
+  dot: (running: boolean, color: string): React.CSSProperties => ({
     width: 6, height: 6, borderRadius: '50%',
     background: running ? color : 'rgba(255,255,255,0.2)',
     boxShadow: running ? `0 0 5px ${color}` : 'none',
@@ -39,7 +40,7 @@ const S = {
     borderRadius: 8, padding: '5px 10px',
     fontSize: 11, color: '#fb923c',
   },
-  connBadge: (connected) => ({
+  connBadge: (connected: boolean): React.CSSProperties => ({
     display: 'flex', alignItems: 'center', gap: 5,
     background: 'rgba(6,8,16,0.7)', backdropFilter: 'blur(12px)',
     border: `1px solid ${connected ? 'rgba(52,211,153,0.3)' : 'rgba(248,113,113,0.3)'}`,
@@ -48,7 +49,14 @@ const S = {
   }),
 }
 
-export function HUD({ runtimes, connected, demoMode, agentCount }) {
+interface HUDProps {
+  runtimes: Record<string, RuntimeInfo>
+  connected: boolean
+  demoMode: boolean
+  agentCount: number
+}
+
+export function HUD({ runtimes, connected, demoMode, agentCount }: HUDProps) {
   return (
     <div style={S.wrap}>
       <div style={S.topRow}>

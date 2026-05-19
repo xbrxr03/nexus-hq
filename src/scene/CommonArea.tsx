@@ -1,11 +1,17 @@
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Text } from '@react-three/drei'
-import { COMMON_AREA } from '../lib/positions.js'
+import * as THREE from 'three'
+import { COMMON_AREA } from '../lib/positions'
+import type { Mesh, MeshBasicMaterial as MeshBasicMat } from 'three'
 
-export function CommonArea({ approvalCount = 0 }) {
-  const ringRef  = useRef()
-  const glowRef  = useRef()
+interface CommonAreaProps {
+  approvalCount?: number
+}
+
+export function CommonArea({ approvalCount = 0 }: CommonAreaProps) {
+  const ringRef = useRef<Mesh>(null)
+  const glowRef = useRef<Mesh>(null)
   const [cx, , cz] = COMMON_AREA.center
 
   useFrame(({ clock }) => {
@@ -15,10 +21,10 @@ export function CommonArea({ approvalCount = 0 }) {
       const intensity = approvalCount > 0
         ? 0.4 + Math.sin(t * 3) * 0.2
         : 0.1 + Math.sin(t * 0.8) * 0.05
-      ringRef.current.material.opacity = intensity
+      ;(ringRef.current.material as THREE.MeshBasicMaterial).opacity = intensity
     }
     if (glowRef.current) {
-      glowRef.current.material.opacity = approvalCount > 0
+      ;(glowRef.current.material as THREE.MeshBasicMaterial).opacity = approvalCount > 0
         ? 0.06 + Math.sin(t * 2) * 0.03
         : 0.025
     }
