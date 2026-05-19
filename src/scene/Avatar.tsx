@@ -2,10 +2,20 @@ import { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Text, Float } from '@react-three/drei'
 import * as THREE from 'three'
-import { avatarColor } from '../lib/colors.js'
-import { getDeskPosition, COMMON_AREA } from '../lib/positions.js'
+import { avatarColor } from '../lib/colors'
+import { getDeskPosition, COMMON_AREA } from '../lib/positions'
+import type { Agent, AgentState } from '../types'
+import type { Mesh, Group, MeshStandardMaterial } from 'three'
 
-const STATE_PARAMS = {
+interface StateParams {
+  emissive: number
+  bobSpeed: number
+  bobAmp: number
+  glowOpacity: number
+  ringColor: string | null
+}
+
+const STATE_PARAMS: Record<AgentState, StateParams> = {
   idle:             { emissive: 0.15, bobSpeed: 1.2,  bobAmp: 0.08, glowOpacity: 0.15, ringColor: null },
   working:          { emissive: 0.55, bobSpeed: 2.5,  bobAmp: 0.12, glowOpacity: 0.5,  ringColor: '#4f8ef7' },
   completed:        { emissive: 0.35, bobSpeed: 1.8,  bobAmp: 0.10, glowOpacity: 0.35, ringColor: '#34d399' },
@@ -13,11 +23,16 @@ const STATE_PARAMS = {
   offline:          { emissive: 0.0,  bobSpeed: 0.5,  bobAmp: 0.03, glowOpacity: 0.0,  ringColor: null },
 }
 
-export function Avatar({ agent, onClick, selected }) {
-  const groupRef   = useRef()
-  const headRef    = useRef()
-  const ringRef    = useRef()
-  const labelRef   = useRef()
+interface AvatarProps {
+  agent: Agent
+  onClick?: (agent: Agent) => void
+  selected?: boolean
+}
+
+export function Avatar({ agent, onClick, selected }: AvatarProps) {
+  const groupRef   = useRef<Group>(null)
+  const headRef    = useRef<Mesh>(null)
+  const ringRef    = useRef<Mesh>(null)
   const currentPos = useRef(new THREE.Vector3())
   const color      = useMemo(() => avatarColor(agent.workspace_id), [agent.workspace_id])
 
@@ -52,14 +67,14 @@ export function Avatar({ agent, onClick, selected }) {
     // Head rotation
     if (headRef.current) {
       headRef.current.rotation.y = t * 0.6
-      const mat = headRef.current.material
+      const mat = headRef.current.material as THREE.MeshStandardMaterial
       mat.emissiveIntensity = params.emissive + Math.sin(t * params.bobSpeed * 1.3) * 0.08
     }
 
     // Orbit ring for working/pending
     if (ringRef.current) {
       ringRef.current.rotation.y = t * (agent.state === 'pending_approval' ? 2.5 : 1.5)
-      ringRef.current.material.opacity = params.glowOpacity * (0.7 + Math.sin(t * 3) * 0.3)
+      ;(ringRef.current.material as THREE.MeshBasicMaterial).opacity = params.glowOpacity * (0.7 + Math.sin(t * 3) * 0.3)
     }
   })
 

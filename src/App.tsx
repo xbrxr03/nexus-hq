@@ -1,30 +1,31 @@
 import { useState, useCallback } from 'react'
-import { Office }       from './scene/Office.jsx'
-import { ConnectPanel } from './ui/ConnectPanel.jsx'
-import { HUD }          from './ui/HUD.jsx'
-import { AvatarCard }   from './ui/AvatarCard.jsx'
-import { LiveFeed }     from './ui/LiveFeed.jsx'
-import { useClawOS }    from './hooks/useClawOS.js'
+import { Office }       from './scene/Office'
+import { ConnectPanel } from './ui/ConnectPanel'
+import { HUD }          from './ui/HUD'
+import { AvatarCard }   from './ui/AvatarCard'
+import { LiveFeed }     from './ui/LiveFeed'
+import { useClawOS }    from './hooks/useClawOS'
+import type { Agent } from './types'
 
 export default function App() {
-  const [host,     setHost]     = useState(null)
+  const [host, setHost] = useState<string | null>(null)
   const [demoMode, setDemoMode] = useState(false)
-  const [selected, setSelected] = useState(null)
+  const [selected, setSelected] = useState<Agent | null>(null)
 
   const { agents, runtimes, peers, approvals, events, connected } =
     useClawOS(host, demoMode)
 
-  const handleConnect = useCallback(h => { setHost(h); setDemoMode(false) }, [])
+  const handleConnect = useCallback((h: string) => { setHost(h); setDemoMode(false) }, [])
   const handleDemo    = useCallback(() => { setDemoMode(true); setHost(null) }, [])
 
-  const handleAvatarClick = useCallback(agent => {
+  const handleAvatarClick = useCallback((agent: Agent) => {
     setSelected(prev =>
       prev && (prev.session_id ?? prev.workspace_id) === (agent.session_id ?? agent.workspace_id)
         ? null : agent
     )
   }, [])
 
-  const handleReset = useCallback(async workspace_id => {
+  const handleReset = useCallback(async (workspace_id: string) => {
     if (!host) return
     try {
       await fetch(`${host}/api/agents/${encodeURIComponent(workspace_id)}/reset`, { method: 'POST' })

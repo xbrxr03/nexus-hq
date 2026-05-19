@@ -1,5 +1,7 @@
-function eventLabel(e) {
-  const d = e.data ?? e
+import type { FeedEvent } from '../types'
+
+function eventLabel(e: FeedEvent): string {
+  const d = (e.data ?? e) as Record<string, string>
   if (e.type === 'audit_event')       return `${(d.decision ?? '').toUpperCase()} ${d.tool ?? ''}`
   if (e.type === 'task_update')       return `${d.status}: ${(d.intent ?? '').slice(0, 40)}`
   if (e.type === 'approval_pending')  return `⏸ ${d.tool ?? 'approval'} requested`
@@ -8,16 +10,16 @@ function eventLabel(e) {
   return e.type ?? 'event'
 }
 
-function eventColor(e) {
+function eventColor(e: FeedEvent): string {
   if (e.type === 'approval_pending')  return '#fb923c'
-  if (e.type === 'approval_resolved') return e.data?.decision === 'approved' ? '#34d399' : '#f87171'
+  if (e.type === 'approval_resolved') return (e.data as Record<string, string>)?.decision === 'approved' ? '#34d399' : '#f87171'
   if (e.type === 'audit_event') {
-    const d = (e.data?.decision ?? '').toLowerCase()
+    const d = ((e.data as Record<string, string>)?.decision ?? '').toLowerCase()
     if (d === 'approved' || d === 'allow') return '#34d399'
     if (d === 'denied'   || d === 'deny')  return '#f87171'
   }
   if (e.type === 'task_update') {
-    const s = e.data?.status ?? ''
+    const s = (e.data as Record<string, string>)?.status ?? ''
     if (s === 'completed') return '#34d399'
     if (s === 'failed')    return '#f87171'
     if (s === 'running')   return '#4f8ef7'
@@ -25,7 +27,11 @@ function eventColor(e) {
   return 'rgba(255,255,255,0.25)'
 }
 
-export function LiveFeed({ events }) {
+interface LiveFeedProps {
+  events: FeedEvent[]
+}
+
+export function LiveFeed({ events }: LiveFeedProps) {
   return (
     <div style={{
       position: 'fixed', top: 0, right: 0, bottom: 0,

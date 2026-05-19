@@ -1,17 +1,77 @@
+import type { AgentState } from '../types'
+
+export interface DemoAgent {
+  workspace_id: string
+  session_id: string
+  turn: number
+  model: string
+  zone: string
+  deskIndex: number
+  state: AgentState
+  _phase?: number
+}
+
+interface DemoRuntime {
+  installed: boolean
+  running: boolean
+  model: string
+}
+
+interface DemoPeer {
+  name: string
+  url: string
+  host: string
+}
+
+interface DemoEvent {
+  type: string
+  data: Record<string, string>
+}
+
+interface DemoApproval {
+  request_id: string
+  tool: string
+  target: string
+  task_id: string
+}
+
+export interface DemoState {
+  agents: DemoAgent[]
+  runtimes: Record<string, DemoRuntime>
+  peers: DemoPeer[]
+  approvals: DemoApproval[]
+  events: DemoEvent[]
+}
+
+interface StateUpdate {
+  type: 'state'
+  agents: DemoAgent[]
+  runtimes: Record<string, DemoRuntime>
+  peers: DemoPeer[]
+  approvals: DemoApproval[]
+}
+
+interface EventUpdate {
+  type: 'demo_event'
+  event: DemoEvent
+}
+
+type DemoUpdate = StateUpdate | EventUpdate
+
 // Demo mode — fake agents that cycle through states automatically
 
-const DEMO_AGENTS = [
+const DEMO_AGENTS: Omit<DemoAgent, 'state'>[] = [
   { workspace_id: 'nexus_default', session_id: 'sess_demo_001', turn: 3, model: 'qwen2.5:7b',   zone: 'nexus',    deskIndex: 0 },
   { workspace_id: 'research',      session_id: 'sess_demo_002', turn: 7, model: 'qwen2.5:7b',   zone: 'nexus',    deskIndex: 1 },
-  { workspace_id: 'code_review',   session_id: 'sess_demo_003', turn: 1, model: 'qwen2.5:coder', zone: 'nexus',   deskIndex: 2 },
+  { workspace_id: 'code_review',  session_id: 'sess_demo_003', turn: 1, model: 'qwen2.5:coder', zone: 'nexus',   deskIndex: 2 },
 ]
 
-const DEMO_PEERS = [
+const DEMO_PEERS: DemoPeer[] = [
   { name: 'MacBook-Pro',   url: 'http://192.168.0.21:7070', host: '192.168.0.21' },
   { name: 'RaspberryPi5',  url: 'http://192.168.0.25:7070', host: '192.168.0.25' },
 ]
 
-const DEMO_EVENTS = [
+const DEMO_EVENTS: DemoEvent[] = [
   { type: 'audit_event',  data: { tool: 'fs.read',          decision: 'approved', target: '~/docs/report.md' }},
   { type: 'audit_event',  data: { tool: 'web.search',       decision: 'approved', target: 'latest AI papers 2026' }},
   { type: 'audit_event',  data: { tool: 'shell.restricted', decision: 'approved', target: 'git status' }},
@@ -22,7 +82,7 @@ const DEMO_EVENTS = [
   { type: 'audit_event',  data: { tool: 'fs.write',         decision: 'approved', target: '~/clawos/workspace/report.md' }},
 ]
 
-const DEMO_RUNTIMES = {
+const DEMO_RUNTIMES: Record<string, DemoRuntime> = {
   nexus:    { installed: true,  running: true,  model: 'qwen2.5:7b' },
   picoclaw: { installed: true,  running: true,  model: 'local' },
   openclaw: { installed: true,  running: true,  model: 'kimi-k2.5' },
@@ -30,14 +90,22 @@ const DEMO_RUNTIMES = {
 
 // Agent state cycle: idle → working → completed → idle
 // Each phase duration in ms
-const PHASE_DURATIONS = { idle: 4000, working: 3000, completed: 1500 }
+const PHASE_DURATIONS: Record<string, number> = { idle: 4000, working: 3000, completed: 1500 }
+
+type OnUpdate = (update: DemoUpdate) => void
 
 export class DemoEngine {
-  constructor(onUpdate) {
+  private onUpdate: OnUpdate
+  private _agents: DemoAgent[]
+  private _eventIdx: number
+  private _timers: ReturnType<typeof setTimeout>[]
+  private _running: boolean
+
+  constructor(onUpdate: OnUpdate) {
     this.onUpdate   = onUpdate
-    this._agents    = DEMO_AGENTS.map(a => ({ ...a, state: 'idle', _phase: 0 }))
+    this._agents    = DEMO_AGENTS.map(a => ({ ...a, state: 'idle' as const, _phase: 0 }))
     this._eventIdx  = 0
-    this._timers    = []
+    this._timers     = []
     this._running   = false
   }
 
@@ -55,18 +123,18 @@ export class DemoEngine {
     this._timers = []
   }
 
-  _schedule(fn, delay) {
+  private _schedule(fn: () => void, delay: number): ReturnType<typeof setTimeout> {
     const t = setTimeout(fn, delay)
     this._timers.push(t)
     return t
   }
 
-  _cycleAgent(i, delay = 0) {
+  private _cycleAgent(i: number, delay = 0): void {
     if (!this._running) return
     this._schedule(() => {
       if (!this._running) return
       const agent = this._agents[i]
-      const states = ['idle', 'working', 'completed']
+      const states: AgentState[] = ['idle', 'working', 'completed']
       const next = states[(states.indexOf(agent.state) + 1) % states.length]
       agent.state = next
       if (next === 'working') agent.turn++
@@ -75,7 +143,7 @@ export class DemoEngine {
     }, delay)
   }
 
-  _scheduleEvent() {
+  private _scheduleEvent(): void {
     if (!this._running) return
     this._schedule(() => {
       this._eventIdx = (this._eventIdx + 1) % DEMO_EVENTS.length
@@ -84,15 +152,15 @@ export class DemoEngine {
     }, 2500 + Math.random() * 1500)
   }
 
-  _scheduleApproval() {
+  private _scheduleApproval(): void {
     if (!this._running) return
     this._schedule(() => {
       // Move random nexus agent to common area for approval
       const nexusAgents = this._agents.filter(a => a.zone === 'nexus')
       if (nexusAgents.length > 0) {
         const a = nexusAgents[Math.floor(Math.random() * nexusAgents.length)]
-        const prev = a.state
-        a.state = 'pending_approval'
+        const prev: AgentState = a.state
+        a.state = 'pending_approval' as AgentState
         this._notify()
         this._schedule(() => {
           a.state = prev
@@ -103,7 +171,7 @@ export class DemoEngine {
     }, 12000 + Math.random() * 8000)
   }
 
-  _notify() {
+  private _notify(): void {
     this.onUpdate({
       type:     'state',
       agents:   this._agents.map(a => ({ ...a })),
@@ -118,7 +186,7 @@ export class DemoEngine {
     })
   }
 
-  get initialState() {
+  get initialState(): DemoState {
     return {
       agents:    this._agents.map(a => ({ ...a })),
       runtimes:  DEMO_RUNTIMES,
