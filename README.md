@@ -8,6 +8,7 @@
 [![Three.js](https://img.shields.io/badge/Three.js-0.183-black?logo=three.js&logoColor=white)](https://threejs.org/)
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/xbrxr03/nexus-hq/actions/workflows/ci.yml/badge.svg)](https://github.com/xbrxr03/nexus-hq/actions/workflows/ci.yml)
 
 **Live Demo:** [nexus-hq-lake.vercel.app](https://nexus-hq-lake.vercel.app)
 
