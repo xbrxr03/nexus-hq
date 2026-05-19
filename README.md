@@ -9,6 +9,8 @@
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+**Live Demo:** https://nexus-hq-lake.vercel.app
+
 **See your agents work. Not a log — a living office.**
 
 Nexus HQ renders your local AI agents as animated avatars inside a 3D office environment. Connect it to [ClawOS](https://github.com/xbrxr03/clawos) and watch agents think, execute, and wait for approvals — all in real time.
