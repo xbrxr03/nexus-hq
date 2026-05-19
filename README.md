@@ -9,19 +9,17 @@
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**Live Demo:** https://nexus-hq-lake.vercel.app
-
-**See your agents work. Not a log — a living office.**
-
-Nexus HQ renders your local AI agents as animated avatars inside a 3D office environment. Connect it to [ClawOS](https://github.com/xbrxr03/clawos) and watch agents think, execute, and wait for approvals — all in real time.
-
-> 🖼️ **Screenshots coming soon** — Nexus HQ is in active development.
+**Live Demo:** [nexus-hq-lake.vercel.app](https://nexus-hq-lake.vercel.app)
 
 </div>
 
 ---
 
+![Nexus HQ Dashboard](./docs/screenshot.png)
+
 ## What It Does
+
+Nexus HQ renders your local AI agents as animated avatars inside a 3D office environment. It streams real-time agent activity — thinking, tool execution, and approval flows — into a visual workspace you can actually see. Built to integrate with [ClawOS](https://github.com/xbrxr03/clawos).
 
 Instead of reading terminal logs, you walk into a virtual office:
 
@@ -59,7 +57,7 @@ Instead of reading terminal logs, you walk into a virtual office:
            (localhost or remote host)
 ```
 
-**Key pieces:**
+**Data flow:** Frontend (React + React Three Fiber) → WebSocket API → ClawOS → Agent Data
 
 | Layer | File | Role |
 |-------|------|------|
@@ -68,7 +66,18 @@ Instead of reading terminal logs, you walk into a virtual office:
 | UI | `ui/HUD.jsx`, `ui/LiveFeed.jsx`, `ui/AvatarCard.jsx`, `ui/ConnectPanel.jsx` | HTML overlay — status bar, event stream, agent detail, connection screen |
 | Demo | `lib/demo.js` | Simulated agent engine — no backend needed |
 
-## Getting Started
+## Tech Stack
+
+| Tech | Version | Why |
+|------|---------|-----|
+| React | 19 | UI framework |
+| React Three Fiber | 9 | Declarative 3D — React components → Three.js scene |
+| @react-three/drei | 10 | Camera controls, helpers, abstractions |
+| @react-three/postprocessing | 3 | Bloom, vignette, film grain — cinematic feel |
+| Three.js | 0.183 | Underlying 3D engine |
+| Vite | 8 | Fast dev server and build tool |
+
+## How to Run
 
 ### Prerequisites
 
@@ -97,41 +106,13 @@ npm run build
 
 Output goes to `dist/`. Serve it with any static host.
 
-## Features in Detail
+## What This Demonstrates
 
-### Zones
-
-Each runtime gets its own lit area in the office:
-
-| Zone | Color | Runtime |
-|------|-------|---------|
-| Nexus | 🔵 Blue | Main agent sessions |
-| PicoClaw | 🟡 Amber | Lightweight local worker |
-| OpenClaw | 🟣 Violet | Distributed peer agents |
-
-### Agent States
-
-Avatars visually reflect what they're doing:
-
-- **Idle** — sitting still, no active task
-- **Active / Working** — animated, task in progress
-- **Pending Approval** — highlighted, waiting for human input
-- **Offline** — dimmed out
-
-### Demo Mode
-
-No ClawOS? No problem. Hit **Demo Mode** and watch simulated agents cycle through states, generate events, and move around the office. Perfect for screenshots, presentations, or just exploring.
-
-## Tech Stack
-
-| Tech | Version | Why |
-|------|---------|-----|
-| React | 19 | UI framework |
-| React Three Fiber | 9 | Declarative 3D — React components → Three.js scene |
-| @react-three/drei | 10 | Camera controls, helpers, abstractions |
-| @react-three/postprocessing | 3 | Bloom, vignette, film grain — cinematic feel |
-| Three.js | 0.183 | Underlying 3D engine |
-| Vite | 8 | Fast dev server and build tool |
+- **React** — component architecture, hooks, state management
+- **3D Rendering** — Three.js scenes via React Three Fiber with post-processing
+- **Real-Time Data** — WebSocket streaming and REST polling with live updates
+- **API Integration** — connecting frontend to ClawOS agent runtime
+- **Full-Stack Development** — end-to-end from 3D rendering to backend communication
 
 ## Part of ClawOS
 
